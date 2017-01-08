@@ -3,6 +3,7 @@ package com.isthisloss.antouchclient;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,30 +18,32 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Locale;
 
 
-
-// TODO: 07.01.17
+// TODO: 08.01.17
 // I still don't know how to programming on android
 // so first of all figure it out
 //
-// Make some optimization (line 72)
+// Make some optimization
 // replace TCP with UPD (or not... it needs to some tests)
 //
-// add one tap action
+// refactoring
 // others depends on server development
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
+    private static final String TAG = "MainActivity";
 
     private TextView display;
     private ImageView imageView;
-    private float last_x;
-    private float last_y;
+    private int last_x;
+    private int last_y;
+    private boolean isClick;
 
-    private Socket socket;
-    private Handler handler;
+    private PrintWriter out;
 
     private static final String SERVERIP = "192.168.1.71";
     private static final int SERVERPORT = 12345;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,36 +53,40 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         imageView = (ImageView) findViewById(R.id.imageView);
 
         imageView.setOnTouchListener(this);
-
         handler = new Handler();
+
         new Thread(new ClientThread()).start();
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        float x = event.getX();
-        float y = event.getY();
+        int x = (int) event.getX();
+        int y = (int) event.getY();
         String off = "";
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 last_x = x;
                 last_y = y;
+                isClick = true;
+                break;
+            case MotionEvent.ACTION_UP:
+                last_x = x;
+                last_y = y;
+
+                if (isClick) {
+                    off = String.format(Locale.ENGLISH, "%d", Constants.TAP);
+                    out.println(off);
+                }
+                isClick = false;
                 break;
             case MotionEvent.ACTION_MOVE:
-                float offset_x = x - last_x;
+                int offset_x = x - last_x;
+                int offset_y = y - last_y;
                 last_x = x;
-                float offset_y = y - last_y;
                 last_y = y;
-                off = "" + offset_x + " " + offset_y;
-
-                try {
-                    PrintWriter out = new PrintWriter(new BufferedWriter(
-                            new OutputStreamWriter(socket.getOutputStream())), true);
-                    out.print(off);
-                    out.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                isClick = false;
+                off = String.format(Locale.ENGLISH, "%d %d %d", Constants.DRAG, offset_x, offset_y);
+                out.println(off);
                 break;
         }
         display.setText(off);
@@ -87,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     }
 
     class ClientThread implements Runnable {
+        private Socket socket;
         private BufferedReader incoming;
 
         @Override
@@ -95,6 +103,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 InetAddress serverAddr = InetAddress.getByName(SERVERIP);
                 socket = new Socket(serverAddr, SERVERPORT);
                 incoming = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                out = new PrintWriter(new BufferedWriter(
+                        new OutputStreamWriter(socket.getOutputStream())), true);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
