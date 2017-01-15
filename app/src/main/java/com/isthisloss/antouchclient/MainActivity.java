@@ -3,11 +3,13 @@ package com.isthisloss.antouchclient;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,7 +19,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Locale;
 
 
@@ -33,29 +34,33 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
     private static final String TAG = "MainActivity";
 
-    private TextView display;
-    private ImageView imageView;
+    private TextView twDisplay;
+    private ImageView iwTouch;
     private int last_x;
     private int last_y;
     private boolean isClick;
 
     private PrintWriter out;
 
-    private static final String SERVERIP = "192.168.1.71";
-    private static final int SERVERPORT = 12345;
     private Handler handler;
+
+    public void onClick(View view) {
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        display = (TextView) findViewById(R.id.textView);
-        imageView = (ImageView) findViewById(R.id.imageView);
-
-        imageView.setOnTouchListener(this);
+        twDisplay = (TextView) findViewById(R.id.twDisplay);
+        iwTouch = (ImageView) findViewById(R.id.iwTouch);
         handler = new Handler();
+    }
 
-        new Thread(new ClientThread()).start();
+    public void onConnect(View view) {
+        iwTouch.setOnTouchListener(this);
+        EditText editText = (EditText) findViewById(R.id.etIp);
+        new Thread(new ClientThread(editText.getText().toString())).start();
     }
 
     @Override
@@ -89,26 +94,36 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 out.println(off);
                 break;
         }
-        display.setText(off);
+        twDisplay.setText(off);
         return true;
     }
 
     class ClientThread implements Runnable {
         private Socket socket;
         private BufferedReader incoming;
+        private String servIp;
+        private static final int SERVERPORT = 12345;
+
+        public ClientThread(String servIp) {
+            this.servIp = servIp;
+        }
 
         @Override
         public void run() {
             try {
-                InetAddress serverAddr = InetAddress.getByName(SERVERIP);
+                InetAddress serverAddr = InetAddress.getByName(servIp);
                 socket = new Socket(serverAddr, SERVERPORT);
                 incoming = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 out = new PrintWriter(new BufferedWriter(
                         new OutputStreamWriter(socket.getOutputStream())), true);
 
             } catch (Exception e) {
+                handler.post(new ToastFromThread("Ошибка подключения"));
                 e.printStackTrace();
+                return;
             }
+
+            handler.post(new ToastFromThread("Подключено"));
 
             while (!Thread.currentThread().isInterrupted()) {
                 String buff;
@@ -122,6 +137,19 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         }
     }
 
+    class ToastFromThread implements Runnable {
+        private String msg;
+
+        public ToastFromThread(String buff) {
+            msg = buff;
+        }
+
+        @Override
+        public void  run() {
+            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     class UpdateUI implements Runnable {
         private String msg;
 
@@ -131,8 +159,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
         @Override
         public void  run() {
-            display.append("\n");
-            display.append(msg);
+            twDisplay.append("\n");
+            twDisplay.append(msg);
         }
     }
 }
