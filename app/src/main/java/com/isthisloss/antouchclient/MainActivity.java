@@ -3,6 +3,7 @@ package com.isthisloss.antouchclient;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringReader;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Locale;
@@ -28,12 +31,11 @@ import java.util.Locale;
 //
 // Make some optimization
 // replace TCP with UPD (or not... it needs to some tests)
-//
+//DRAG
 // refactoring
 // others depends on server development
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
     private static final String TAG = "MainActivity";
-
     private TextView twDisplay;
     private ImageView iwTouch;
     private int last_x;
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     public void onClick(View view) {
 
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 last_y = y;
 
                 if (isClick) {
-                    off = String.format(Locale.ENGLISH, "%d", Constants.TAP);
+                    off = String.format(Locale.ENGLISH, "%d", Constants.LEFT_CLICK);
                     out.println(off);
                 }
                 isClick = false;
@@ -89,8 +92,20 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 int offset_y = y - last_y;
                 last_x = x;
                 last_y = y;
-                isClick = false;
-                off = String.format(Locale.ENGLISH, "%d %d %d", Constants.DRAG, offset_x, offset_y);
+                if (event.getPointerCount() == 2) {
+                    if (offset_y > 4) {
+                        off = String.format(Locale.ENGLISH, "%d", Constants.WHEEL_UP);
+                    } else if (offset_y < -4) {
+                        off = String.format(Locale.ENGLISH, "%d", Constants.WHEEL_DOWN);
+                    }
+                    else {
+                        return true;
+                    }
+
+                } else {
+                    isClick = false;
+                    off = String.format(Locale.ENGLISH, "%d %d %d", Constants.DRAG, offset_x, offset_y);
+                }
                 out.println(off);
                 break;
         }
@@ -116,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 incoming = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 out = new PrintWriter(new BufferedWriter(
                         new OutputStreamWriter(socket.getOutputStream())), true);
-
             } catch (Exception e) {
                 handler.post(new ToastFromThread("Ошибка подключения"));
                 e.printStackTrace();

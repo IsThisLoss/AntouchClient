@@ -1,7 +1,10 @@
 package com.isthisloss.antouchclient;
 
 public class Constants {
-    public static final int TAP = 1;
-    public static final int DRAG = 2;
-    public static final int UNTAP = 3;
+    static final int DRAG = 0;
+    static final int LEFT_CLICK = 1;
+    static final int RIGHT_CLICK = 3;
+    static final int WHEEL_CLICK = 2;
+    static final int WHEEL_UP = 4;
+    static final int WHEEL_DOWN = 5;
 }
