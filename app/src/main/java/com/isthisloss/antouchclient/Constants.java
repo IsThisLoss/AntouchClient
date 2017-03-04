@@ -10,4 +10,6 @@ class Constants {
     static final int WHEEL_CLICK = 2;
     static final int WHEEL_UP = 4;
     static final int WHEEL_DOWN = 5;
+
+    static final String BROADCAST_KEY = "key";
 }
