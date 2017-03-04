@@ -2,10 +2,13 @@ package com.isthisloss.antouchclient;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -31,5 +34,14 @@ public class MainActivity extends AppCompatActivity {
         touchListener = new TouchListener(networking);
 
         iwTouch.setOnTouchListener(touchListener);
+//        iwTouch.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                event.getAction()
+//                String s = String.format(Locale.ENGLISH, "x = %f y = %f\n", event.getX(), event.getY());
+//                twDisplay.setText(s);
+//                return false;
+//            }
+//        });
     }
 }

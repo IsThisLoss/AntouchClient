@@ -1,6 +1,9 @@
 package com.isthisloss.antouchclient;
 
-public class Constants {
+class Constants {
+    static final int BROADCAST_PORT = 12346;
+    static final int TCP_PORT = 12345;
+
     static final int DRAG = 0;
     static final int LEFT_CLICK = 1;
     static final int RIGHT_CLICK = 3;

@@ -46,21 +46,23 @@ class TouchListener implements View.OnTouchListener {
                 int offset_y = y - last_y;
                 last_x = x;
                 last_y = y;
-                if (event.getPointerCount() == 2) {
-                    if (offset_y > 4) {
-                        off = String.format(Locale.ENGLISH, "%d", Constants.WHEEL_UP);
-                    } else if (offset_y < -4) {
-                        off = String.format(Locale.ENGLISH, "%d", Constants.WHEEL_DOWN);
+                if (Math.abs(offset_y) > 2 && Math.abs(offset_x) > 2) {
+                    if (event.getPointerCount() == 1) {
+                        isClick = false;
+                        off = String.format(Locale.ENGLISH, "%d %d %d", Constants.DRAG, offset_x, offset_y);
+                    } else if (event.getPointerCount() == 2) {
+                        if (offset_y > 2) {
+                            off = String.format(Locale.ENGLISH, "%d", Constants.WHEEL_UP);
+                        } else if (offset_y < -2) {
+                            off = String.format(Locale.ENGLISH, "%d", Constants.WHEEL_DOWN);
+                        }
+                        else {
+                            return true;
+                        }
                     }
-                    else {
-                        return true;
-                    }
+                    networking.send(off);
 
-                } else {
-                    isClick = false;
-                    off = String.format(Locale.ENGLISH, "%d %d %d", Constants.DRAG, offset_x, offset_y);
                 }
-                networking.send(off);
                 break;
         }
         return true;
