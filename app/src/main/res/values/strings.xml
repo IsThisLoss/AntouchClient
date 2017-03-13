@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">AntouchClient</string>
+    <string name="SearchBtn">Поиск</string>
+    <string name="SearchInstr">Как только приставка будет включена нажмите кнопку \"Поиск\" ниже</string>
+    <string name="WaitStr">Пожалуйста подождите</string>
+    <string name="NetError">Ошибка подключения!\nПроверьте подключение приставки к (не вышкинскому)интернету</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="tab_one">Тачпад</string>
+    <string name="tab_two">Дополнительно</string>
 </resources>

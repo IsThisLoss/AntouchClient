@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.isthisloss.antouchclient.LauncherActivity">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        tools:layout_editor_absoluteX="168dp"
+        tools:layout_editor_absoluteY="88dp" />
+
+    <Button
+        android:id="@+id/searchBtn"
+        android:layout_width="90dp"
+        android:layout_height="44dp"
+        android:text="@string/SearchBtn"
+        tools:layout_editor_absoluteX="147dp"
+        tools:layout_editor_absoluteY="272dp" />
+
+    <TextView
+        android:id="@+id/textMsg"
+        android:layout_width="212dp"
+        android:layout_height="112dp"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="86dp"
+        tools:layout_editor_absoluteY="149dp"
+        tools:text="@string/SearchInstr" />
+</android.support.constraint.ConstraintLayout>

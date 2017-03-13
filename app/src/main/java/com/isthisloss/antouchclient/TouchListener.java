@@ -14,9 +14,9 @@ class TouchListener implements View.OnTouchListener {
     private int last_y;
     private boolean isClick;
 
-    private Networking networking;
+    private Networking2 networking;
 
-    public TouchListener(Networking networking) {
+    public TouchListener(Networking2 networking) {
         this.networking = networking;
     }
 
@@ -24,47 +24,70 @@ class TouchListener implements View.OnTouchListener {
     public boolean onTouch(View v, MotionEvent event) {
         int x = (int) event.getX();
         int y = (int) event.getY();
-        String off = "";
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 last_x = x;
                 last_y = y;
+
                 isClick = true;
+
                 break;
             case MotionEvent.ACTION_UP:
                 last_x = x;
                 last_y = y;
 
                 if (isClick) {
-                    off = String.format(Locale.ENGLISH, "%d", Constants.LEFT_CLICK);
-                    networking.send(off);
+                    tap();
                 }
+
                 isClick = false;
+
                 break;
             case MotionEvent.ACTION_MOVE:
                 int offset_x = x - last_x;
                 int offset_y = y - last_y;
+
                 last_x = x;
                 last_y = y;
-                if (Math.abs(offset_y) > 2 && Math.abs(offset_x) > 2) {
-                    if (event.getPointerCount() == 1) {
-                        isClick = false;
-                        off = String.format(Locale.ENGLISH, "%d %d %d", Constants.DRAG, offset_x, offset_y);
-                    } else if (event.getPointerCount() == 2) {
-                        if (offset_y > 2) {
-                            off = String.format(Locale.ENGLISH, "%d", Constants.WHEEL_UP);
-                        } else if (offset_y < -2) {
-                            off = String.format(Locale.ENGLISH, "%d", Constants.WHEEL_DOWN);
-                        }
-                        else {
-                            return true;
-                        }
-                    }
-                    networking.send(off);
 
+                int pointerCount = event.getPointerCount();
+                isClick = false;
+
+                if (pointerCount == 1) {
+                    move(offset_x, offset_y);
+                } else if (pointerCount == 2) {
+                    scroll(offset_y);
                 }
+
                 break;
         }
         return true;
     }
+
+    private void tap() {
+        String msg = String.format(Locale.ENGLISH, "%d", Constants.LEFT_CLICK);
+        networking.send(msg);
+    }
+
+    private void move(int offset_x, int offset_y) {
+        String msg = String.format(Locale.ENGLISH, "%d %d %d", Constants.DRAG, offset_x, offset_y);
+        networking.send(msg);
+    }
+
+    private void scroll(int offset_y) {
+        int cmd;
+
+        if (offset_y > 0) {
+            cmd = Constants.WHEEL_DOWN;
+        } else if (offset_y < 0) {
+            cmd = Constants.WHEEL_UP;
+        } else {
+            return;
+        }
+
+        String msg = String.format(Locale.ENGLISH, "%d %d", cmd, offset_y);
+        networking.send(msg);
+    }
+
 }
