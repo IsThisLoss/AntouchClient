@@ -14,9 +14,9 @@ class TouchListener implements View.OnTouchListener {
     private int last_y;
     private boolean isClick;
 
-    private Networking2 networking;
+    private Networking networking;
 
-    public TouchListener(Networking2 networking) {
+    public TouchListener(Networking networking) {
         this.networking = networking;
     }
 

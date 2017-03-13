@@ -1,5 +1,6 @@
 package com.isthisloss.antouchclient;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
@@ -14,13 +15,13 @@ import java.net.UnknownHostException;
  */
 
 class BroadcastSender {
-    private Context context;
+    private Activity activity;
     private Runnable errorListener;
 
     private DatagramSocket dgramSock;
 
-    BroadcastSender(Context context, Runnable errorListener) {
-        this.context = context;
+    BroadcastSender(Activity activity, Runnable errorListener) {
+        this.activity = activity;
         this.errorListener = errorListener;
     }
 
@@ -41,14 +42,14 @@ class BroadcastSender {
                 return new String(recievedBytes).trim();
             }
         } catch (Exception e) {
-            errorListener.run();
+            activity.runOnUiThread(errorListener);
             e.printStackTrace();
         }
         return null;
     }
 
     private InetAddress getBroadcastAddress() throws UnknownHostException {
-        WifiManager wifi = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE); // wtf
+        WifiManager wifi = (WifiManager) activity.getApplicationContext().getSystemService(Context.WIFI_SERVICE); // wtf
         DhcpInfo dhcpInfo = wifi.getDhcpInfo();
 
         int broadcast = (dhcpInfo.ipAddress & dhcpInfo.netmask) | ~dhcpInfo.netmask;

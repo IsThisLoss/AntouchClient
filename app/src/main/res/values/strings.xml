@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">AntouchClient</string>
     <string name="SearchBtn">Поиск</string>
-    <string name="SearchInstr">Как только приставка будет включена нажмите кнопку \"Поиск\" ниже</string>
+    <string name="SearchInstr">Как только приставка будет включена\nнажмите кнопку \"Поиск\" ниже</string>
     <string name="WaitStr">Пожалуйста подождите</string>
     <string name="NetError">Ошибка подключения!\nПроверьте подключение приставки к (не вышкинскому)интернету</string>
     <string name="title_activity_main">MainActivity</string>

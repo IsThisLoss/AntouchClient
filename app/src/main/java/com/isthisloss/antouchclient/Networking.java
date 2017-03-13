@@ -1,5 +1,7 @@
 package com.isthisloss.antouchclient;
 
+import android.app.Activity;
+
 import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -11,17 +13,15 @@ import java.net.Socket;
  */
 
 class Networking {
-    private static final Networking ourInstance = new Networking();
-
-    static Networking getInstance() {
-        return ourInstance;
-    }
-
     private Socket socket;
     private PrintWriter output;
+    private Activity activity;
+    Runnable errorListener;
     private String serverIp;
 
-    private Networking() {
+    public Networking(Activity activity, Runnable errorListener) {
+        this.activity = activity;
+        this.errorListener = errorListener;
     }
 
     public void connect(String ip) {
@@ -41,6 +41,7 @@ class Networking {
                 //incoming = new BufferedReader(new InputStreamReader(socket.getInputStream())); maybe for future use
                 output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
             } catch (Exception e) {
+                activity.runOnUiThread(errorListener);
                 e.printStackTrace();
             }
         }
