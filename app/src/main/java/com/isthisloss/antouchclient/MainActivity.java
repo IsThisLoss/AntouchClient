@@ -1,6 +1,10 @@
 package com.isthisloss.antouchclient;
 
+import android.content.DialogInterface;
+import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -9,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+
+    private BroadcastSender broadcastSender;
+    private Networking networking;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,18 +61,69 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-
         //  mine
+
+        broadcastSender = new BroadcastSender(this)
+        networking = null;
+        Log.d("DDD", "before execute");
+        broadcastSender.execute();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finishCallback();
+            }
+        }, 10000);
+    }
+
+    public void finishCallback() {
+        Log.d("DDD", "in callback");
+        if (broadcastSender.getStatus() == AsyncTask.Status.FINISHED) {
+            initNetworking();
+        } else {
+            failedToBroadcast();
+        }
+    }
+
+    private void initNetworking() {
+        Log.d("DDD", "in init");
+        String ip = null;
+        try {
+            ip = broadcastSender.get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         ImageView iw = (ImageView) findViewById(R.id.iwTouch);
-        Networking networking = new Networking(this, new Runnable() {
+        networking = new Networking(MainActivity.this, new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(MainActivity.this, "Все сломалось", Toast.LENGTH_SHORT).show();
             }
         });
+        networking.connect(ip);
         iw.setOnTouchListener(new TouchListener(networking));
     }
 
+    private void failedToBroadcast() {
+        Log.d("DDD", "in fail");
+        broadcastSender.cancel(true);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Ошибка")
+                .setMessage("Ошибка подключения")
+                .setCancelable(false)
+                .setNegativeButton("Закрыть", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                });
+        builder.create().show();
+    }
+
+
+
+    // auto-generated stuff
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -123,8 +183,6 @@ public class MainActivity extends AppCompatActivity {
             } else if (num == 2) {
                 rootView = inflater.inflate(R.layout.fragment_others, container, false);
             }
-            //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
         }
     }
@@ -133,9 +191,9 @@ public class MainActivity extends AppCompatActivity {
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
