@@ -16,15 +16,15 @@ class Networking {
     private Socket socket;
     private PrintWriter output;
     private Activity activity;
-    Runnable errorListener;
+    private Runnable errorListener;
     private String serverIp;
 
-    public Networking(Activity activity, Runnable errorListener) {
+    Networking(Activity activity, Runnable errorListener) {
         this.activity = activity;
         this.errorListener = errorListener;
     }
 
-    public void connect(String ip) {
+    void connect(String ip) {
         this.serverIp = ip;
         new Thread(new StartNetworking()).start();
     }

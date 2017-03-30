@@ -36,21 +36,24 @@
                 android:id="@+id/btnVolDown"
                 android:layout_width="90dp"
                 android:layout_height="60dp"
-                android:text="VolDw" />
+                android:text="VolDw"
+                android:onClick="onButtonClick"/>
 
             <Button
                 android:id="@+id/btnUp"
                 android:layout_width="90dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
-                android:text="Up" />
+                android:text="Up"
+                android:onClick="onButtonClick"/>
 
             <Button
                 android:id="@+id/btnVolUp"
                 android:layout_width="90dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
-                android:text="VolUP" />
+                android:text="VolUP"
+                android:onClick="onButtonClick"/>
         </LinearLayout>
 
         <LinearLayout
@@ -63,21 +66,24 @@
                 android:layout_width="90dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
-                android:text="Left" />
+                android:text="Left"
+                android:onClick="onButtonClick"/>
 
             <Button
                 android:id="@+id/btnDown"
                 android:layout_width="90dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
-                android:text="Down" />
+                android:text="Down"
+                android:onClick="onButtonClick"/>
 
             <Button
                 android:id="@+id/btnRight"
                 android:layout_width="90dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
-                android:text="Right" />
+                android:text="Right"
+                android:onClick="onButtonClick"/>
         </LinearLayout>
     </LinearLayout>
 

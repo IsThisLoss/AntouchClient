@@ -1,16 +1,12 @@
 package com.isthisloss.antouchclient;
 
 import android.content.DialogInterface;
-
-import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,24 +17,10 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private static final String TAG = "MainActivity";
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private CustomViewPager mViewPager;
-
-
-    private BroadcastSender broadcastSender;
     private Networking networking;
+    private ButtonsListener buttonsListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +31,24 @@ public class MainActivity extends AppCompatActivity {
         //setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        /*
+         * The {@link android.support.v4.view.PagerAdapter} that will provide
+         * fragments for each of the sections. We use a
+         * {@link FragmentPagerAdapter} derivative, which will keep every
+         * loaded fragment in memory. If this becomes too memory intensive, it
+         * may be best to switch to a
+         * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+         */
+
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (CustomViewPager) findViewById(R.id.container);
+        /*
+         * The {@link ViewPager} that will host the section contents.
+         */
+
+        CustomViewPager mViewPager = (CustomViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         mViewPager.setPagingEnabled(false);
@@ -62,13 +58,15 @@ public class MainActivity extends AppCompatActivity {
 
         //  mine
 
-        broadcastSender = new BroadcastSender(this);
+        BroadcastSender broadcastSender = new BroadcastSender(this);
         networking = null;
-        Log.d("DDD", "before execute");
+        buttonsListener = null;
+        Log.d(TAG, "AsyncTask started");
         broadcastSender.execute();
     }
 
     public void onTaskFinished(String ip) {
+        Log.d(TAG, "AsyncTask callback was called");
         if (ip != null) {
             initNetworking(ip);
         } else {
@@ -77,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initNetworking(String ip) {
-        Log.d("DDD", "in init");
+        Log.d("TAG", "Start initialising of networking");
         ImageView iw = (ImageView) findViewById(R.id.iwTouch);
         networking = new Networking(MainActivity.this, new Runnable() {
             @Override
@@ -87,10 +85,11 @@ public class MainActivity extends AppCompatActivity {
         });
         networking.connect(ip);
         iw.setOnTouchListener(new TouchListener(networking));
+        buttonsListener = new ButtonsListener(networking);
     }
 
     private void failedToBroadcast() {
-        Log.d("DDD", "in fail");
+        Log.d(TAG, "Broadcast failed");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Ошибка")
                 .setMessage("Ошибка подключения")
@@ -102,6 +101,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         builder.create().show();
+    }
+
+    public void onButtonClick(View v) {
+        if (buttonsListener != null) {
+            buttonsListener.onClick(v);
+        }
     }
 
     // auto-generated stuff

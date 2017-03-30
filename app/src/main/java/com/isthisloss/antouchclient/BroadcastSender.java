@@ -18,6 +18,7 @@ import java.net.UnknownHostException;
 
 class BroadcastSender extends AsyncTask<Void, Void, String> {
     private MainActivity activity;
+    private CountDownTimer countDownTimer;
     private ProgressDialog progressDialog;
 
     BroadcastSender(MainActivity activity) {
@@ -29,7 +30,7 @@ class BroadcastSender extends AsyncTask<Void, Void, String> {
         super.onPreExecute();
         progressDialog = ProgressDialog.show(activity, "Поиск приставки", "Пожалуйста подождите", true);
 
-        new CountDownTimer(5000, 5000) {
+        countDownTimer = new CountDownTimer(5000, 5000) {
             @Override
             public void onTick(long millisUntilFinished) {
 
@@ -46,6 +47,7 @@ class BroadcastSender extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
+        countDownTimer.cancel();
         progressDialog.dismiss();
         activity.onTaskFinished(s);
         activity = null; // due to free memory

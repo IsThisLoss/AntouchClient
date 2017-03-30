@@ -11,5 +11,12 @@ class Constants {
     static final int WHEEL_UP = 4;
     static final int WHEEL_DOWN = 5;
 
+    static final int BUTTON_UP = 10;
+    static final int BUTTON_DOWN = 11;
+    static final int BUTTON_LEFT = 12;
+    static final int BUTTON_RIGHT = 14;
+    static final int BUTTON_VOL_DOWN = 15;
+    static final int BUTTON_VOL_UP = 17;
+
     static final String BROADCAST_KEY = "key";
 }
