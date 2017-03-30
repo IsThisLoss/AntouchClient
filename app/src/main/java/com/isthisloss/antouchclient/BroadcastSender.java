@@ -1,12 +1,11 @@
 package com.isthisloss.antouchclient;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.os.Handler;
+import android.os.CountDownTimer;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -18,10 +17,10 @@ import java.net.UnknownHostException;
  */
 
 class BroadcastSender extends AsyncTask<Void, Void, String> {
-    private Activity activity;
+    private MainActivity activity;
     private ProgressDialog progressDialog;
 
-    public BroadcastSender(Activity activity) {
+    BroadcastSender(MainActivity activity) {
         this.activity = activity;
     }
 
@@ -29,12 +28,27 @@ class BroadcastSender extends AsyncTask<Void, Void, String> {
     protected void onPreExecute() {
         super.onPreExecute();
         progressDialog = ProgressDialog.show(activity, "Поиск приставки", "Пожалуйста подождите", true);
+
+        new CountDownTimer(5000, 5000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                BroadcastSender.this.onPostExecute(null);
+            }
+        }.start();
+
     }
 
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
         progressDialog.dismiss();
+        activity.onTaskFinished(s);
+        activity = null; // due to free memory
     }
 
     @Override
@@ -46,14 +60,10 @@ class BroadcastSender extends AsyncTask<Void, Void, String> {
             byte[] broadcastKey = Constants.BROADCAST_KEY.getBytes();
             DatagramPacket packet = new DatagramPacket(broadcastKey, broadcastKey.length, getBroadcastAddress(), Constants.BROADCAST_PORT);
             dgramSock.send(packet);
-            while (true) {
-                byte[] recievedBytes = new byte[128];
-
-                DatagramPacket recievePack = new DatagramPacket(recievedBytes, recievedBytes.length);
-
-                dgramSock.receive(recievePack);
-                return new String(recievedBytes).trim();
-            }
+            byte[] recievedBytes = new byte[128];
+            DatagramPacket recievePack = new DatagramPacket(recievedBytes, recievedBytes.length);
+            dgramSock.receive(recievePack);
+            return new String(recievedBytes).trim();
         } catch (Exception e) {
             return null;
         }

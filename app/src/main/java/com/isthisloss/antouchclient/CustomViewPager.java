@@ -1,0 +1,38 @@
+package com.isthisloss.antouchclient;
+
+import android.content.Context;
+import android.support.v4.view.ViewPager;
+import android.util.AttributeSet;
+import android.view.MotionEvent;
+
+/**
+ * Created by Dima on 30.03.2017.
+ */
+
+// http://stackoverflow.com/questions/7814017/is-it-possible-to-disable-scrolling-on-a-viewpager
+class CustomViewPager extends ViewPager {
+
+    private boolean isPagingEnabled = true;
+
+    public CustomViewPager(Context context) {
+        super(context);
+    }
+
+    public CustomViewPager(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        return this.isPagingEnabled && super.onTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return this.isPagingEnabled && super.onInterceptTouchEvent(ev);
+    }
+
+    public void setPagingEnabled(boolean pagingEnabled) {
+        this.isPagingEnabled = pagingEnabled;
+    }
+}

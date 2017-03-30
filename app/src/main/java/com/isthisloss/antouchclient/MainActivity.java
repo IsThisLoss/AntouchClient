@@ -1,12 +1,11 @@
 package com.isthisloss.antouchclient;
 
 import android.content.DialogInterface;
+
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,8 +14,6 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -37,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
+    private CustomViewPager mViewPager;
 
 
     private BroadcastSender broadcastSender;
@@ -48,52 +45,39 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = (CustomViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        mViewPager.setPagingEnabled(false);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
         //  mine
 
-        broadcastSender = new BroadcastSender(this)
+        broadcastSender = new BroadcastSender(this);
         networking = null;
         Log.d("DDD", "before execute");
         broadcastSender.execute();
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finishCallback();
-            }
-        }, 10000);
     }
 
-    public void finishCallback() {
-        Log.d("DDD", "in callback");
-        if (broadcastSender.getStatus() == AsyncTask.Status.FINISHED) {
-            initNetworking();
+    public void onTaskFinished(String ip) {
+        if (ip != null) {
+            initNetworking(ip);
         } else {
             failedToBroadcast();
         }
     }
 
-    private void initNetworking() {
+    private void initNetworking(String ip) {
         Log.d("DDD", "in init");
-        String ip = null;
-        try {
-            ip = broadcastSender.get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         ImageView iw = (ImageView) findViewById(R.id.iwTouch);
         networking = new Networking(MainActivity.this, new Runnable() {
             @Override
@@ -107,8 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void failedToBroadcast() {
         Log.d("DDD", "in fail");
-        broadcastSender.cancel(true);
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Ошибка")
                 .setMessage("Ошибка подключения")
                 .setCancelable(false)
@@ -121,31 +104,29 @@ public class MainActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-
-
     // auto-generated stuff
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_main, menu);
+//        return true;
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
 
     /**
