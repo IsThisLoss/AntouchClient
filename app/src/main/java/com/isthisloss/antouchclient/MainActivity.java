@@ -2,6 +2,7 @@ package com.isthisloss.antouchclient;
 
 import android.content.DialogInterface;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
@@ -9,7 +10,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -21,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Networking networking;
     private ButtonsListener buttonsListener;
+    private GestureDetectorCompat gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +88,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         networking.connect(ip);
-        iw.setOnTouchListener(new TouchListener(networking));
+        gestureDetector = new GestureDetectorCompat(this, new TouchListener(networking));
+        iw.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                gestureDetector.onTouchEvent(event);
+                return true;
+            }
+        });
         buttonsListener = new ButtonsListener(networking);
     }
 
