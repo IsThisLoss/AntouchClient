@@ -17,6 +17,7 @@ class Constants {
     static final int BUTTON_RIGHT = 14;
     static final int BUTTON_VOL_DOWN = 15;
     static final int BUTTON_VOL_UP = 17;
+    static final int SELECTION = 18;
 
     static final String BROADCAST_KEY = "key";
 }

@@ -29,8 +29,13 @@ class Networking {
         new Thread(new StartNetworking()).start();
     }
 
-    void send(String string) {
-        output.println(string);
+    void send(final String string) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                output.println(string);
+            }
+        }).start();
     }
 
     private class StartNetworking implements Runnable {

@@ -1,7 +1,6 @@
 package com.isthisloss.antouchclient;
 
-import android.gesture.GestureLibraries;
-import android.gesture.GestureLibrary;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -16,15 +15,13 @@ import java.util.Locale;
 class TouchListener extends GestureDetector.SimpleOnGestureListener {
 
     private Networking networking;
-
-
-
+    private Boolean flag;
     TouchListener(Networking networking) {
         this.networking = networking;
     }
 
     private void move(int offset_x, int offset_y) {
-        String msg = String.format(Locale.ENGLISH, "%d %d %d", Constants.DRAG, -offset_x, -offset_y);
+        final String msg = String.format(Locale.ENGLISH, "%d %d %d", Constants.DRAG, -offset_x, -offset_y);
         networking.send(msg);
     }
 
@@ -45,21 +42,42 @@ class TouchListener extends GestureDetector.SimpleOnGestureListener {
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
-        String msg = String.format(Locale.ENGLISH, "%d", Constants.LEFT_CLICK);
+        String msg = String.format(Locale.ENGLISH, "%d", 88);
         networking.send(msg);
+        flag = true;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    if (flag) {
+                        String msg = String.format(Locale.ENGLISH, "%d", 885);
+                        networking.send(msg);
+                    }
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }).start();
         return true;
     }
 
-    @Override
-    public boolean onDoubleTap(MotionEvent e) {
-        // todo send drag mode enable
-        Log.d("GEST", "DOUBLE TAP");
-        return true;
-    }
+//    @Override
+//    public boolean onDoubleTap(MotionEvent e) {
+//        // todo send drag mode enable
+//        Log.d("GEST", "DOUBLE TAP");
+//        String msg = String.format(Locale.ENGLISH, "%d", Constants.SELECTION);
+//        networking.send(msg);
+//        Log.d("GEST", "DOUBLE TAP end");
+//        return true;
+//    }
 
 
     @Override
     public boolean onScroll(MotionEvent first, MotionEvent last, float distanceX, float distanceY) {
+        flag = false;
+        String msg = String.format(Locale.ENGLISH, "%d", 885);
+        networking.send(msg);
         int pointerCount = last.getPointerCount();
         if (pointerCount == 1) {
             move((int) distanceX, (int) distanceY);
