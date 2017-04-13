@@ -1,13 +1,10 @@
 package com.isthisloss.antouchclient;
 
-import android.content.Context;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * Created by isthisloss on 09.04.17.
@@ -16,79 +13,96 @@ import java.util.Locale;
 class TouchListener2 implements View.OnTouchListener {
     private final String TAG = "TL2";
 
-    private final static int UP = 101;
     private boolean holdOn;
-    private int lastUp;
+    private boolean waitForClick;
+    private int lastClick;
+
     private Networking networking;
-    private GestureDetector gestureDetector;
     private Calendar calendar;
 
+    private int lastX;
+    private int lastY;
 
-    TouchListener2(Context context, Networking networking) {
+    TouchListener2(Networking networking) {
         this.networking = networking;
-        gestureDetector = new GestureDetector(context, new GestrureListener());
-        holdOn = false;
         calendar = Calendar.getInstance();
+        holdOn = false;
+        lastClick = 0;
+        waitForClick = false;
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (calendar.get(Calendar.SECOND) - lastUp <= 1)
-                networking.send(String.valueOf(101));
+                actionDown(event);
                 break;
             case MotionEvent.ACTION_UP:
-                networking.send(String.valueOf(102));
+                actionUp(event);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                actionMove(event);
                 break;
         }
-        gestureDetector.onTouchEvent(event);
         return true;
     }
 
+    private void actionDown(MotionEvent e) {
+        lastX = (int) e.getX();
+        lastY = (int) e.getY();
 
-    private class GestrureListener extends GestureDetector.SimpleOnGestureListener {
-        private int last_click;
-
-        private void move(int offset_x, int offset_y) {
-            final String msg = String.format(Locale.ENGLISH, "%d %d %d", Constants.DRAG, -offset_x, -offset_y);
-            networking.send(msg);
-            Log.d(TAG, "move");
+        if (calendar.get(Calendar.SECOND) - lastClick <= 1) {
+            holdOn = true;
+            networking.send(Package.mouseKeyEvent(Package.HOLD_ON));
+        } else {
+            waitForClick = true;
         }
+    }
 
-        private void scroll(int offset_y) {
-            int cmd;
-
-            if (offset_y > 0) {
-                cmd = Constants.WHEEL_DOWN;
-            } else if (offset_y < 0) {
-                cmd = Constants.WHEEL_UP;
-            } else {
-                return;
+    private void actionUp(MotionEvent e) {
+        if (holdOn) {
+            networking.send(Package.mouseKeyEvent(Package.HOLD_OFF));
+            holdOn = false;
+        } else if (waitForClick) {
+            lastClick = calendar.get(Calendar.SECOND);
+            switch (e.getPointerCount()) {
+                case 1:
+                    networking.send(Package.mouseKeyEvent(Package.LEFT_CLICK));
+                    break;
+                case 2:
+                    networking.send(Package.mouseKeyEvent(Package.RIGHT_CLICK));
+                    break;
+                case 3:
+                    networking.send(Package.mouseKeyEvent(Package.WHELE_CLICK));
+                    break;
+                default:
+                    break;
             }
-
-            String msg = String.format(Locale.ENGLISH, "%d %d", cmd, offset_y);
-            networking.send(msg);
+            waitForClick = false;
         }
+    }
 
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            String msg = String.format(Locale.ENGLISH, "%d", Constants.LEFT_CLICK);
-            networking.send(msg);
-            Log.d(TAG, "onSingleTapConfirmed");
-            last_click = calendar.get(Calendar.SECOND);
-            return false;
-        }
+    private void actionMove(MotionEvent e) {
+        int x = (int) e.getX();
+        int y = (int) e.getY();
 
-        @Override
-        public boolean onScroll(MotionEvent first, MotionEvent last, float distanceX, float distanceY) {
-            int pointerCount = last.getPointerCount();
-            if (pointerCount == 1) {
-                move((int) distanceX, (int) distanceY);
-            } else if (pointerCount == 2) {
-                scroll((int) distanceY);
-            }
-            return true;
+        if (e.getPointerCount() == 1) {
+            pointerMove(x - lastX, y - lastY);
+            lastX = x;
+            lastY = y;
+        } else if (e.getPointerCount() == 2) {
+            scroll(y - lastY);
+            lastX = x;
+            lastY = y;
         }
+    }
+
+    private void pointerMove(int dx, int dy) {
+        waitForClick = false;
+        networking.send(Package.mouseMove(dx, dy));
+    }
+
+    private void scroll(int dy) {
+        networking.send(Package.mouseScroll(dy));
     }
 }

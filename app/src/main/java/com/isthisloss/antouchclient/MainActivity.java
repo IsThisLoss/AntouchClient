@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Networking networking;
     private ButtonsListener buttonsListener;
-    private GestureDetectorCompat gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,8 +87,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         networking.connect(ip);
-        gestureDetector = new GestureDetectorCompat(this, new TouchListener(networking));
-        iw.setOnTouchListener(new TouchListener2(getApplicationContext(), networking));
+        iw.setOnTouchListener(new TouchListener2(networking));
         buttonsListener = new ButtonsListener(networking);
     }
 
