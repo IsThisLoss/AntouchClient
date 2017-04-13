@@ -89,13 +89,7 @@ public class MainActivity extends AppCompatActivity {
         });
         networking.connect(ip);
         gestureDetector = new GestureDetectorCompat(this, new TouchListener(networking));
-        iw.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                gestureDetector.onTouchEvent(event);
-                return true;
-            }
-        });
+        iw.setOnTouchListener(new TouchListener2(getApplicationContext(), networking));
         buttonsListener = new ButtonsListener(networking);
     }
 

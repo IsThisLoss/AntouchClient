@@ -1,28 +1,37 @@
 package com.isthisloss.antouchclient;
 
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
-
+import java.util.Calendar;
 import java.util.Locale;
 
 /**
  * Created by isthisloss on 11.02.17.
  */
 
-class TouchListener extends GestureDetector.SimpleOnGestureListener {
+class TouchListener extends GestureDetector.SimpleOnGestureListener implements GestureDetector.OnDoubleTapListener {
 
     private Networking networking;
-    private Boolean flag;
+    private int last_click;
+    private Calendar calendar;
+    private static String TAG = "TouchListener";
+
+    private final static int HOLD_ON = 101;
+    private final static int HOLD_OFF = 102;
+    private boolean holdOn;
+
     TouchListener(Networking networking) {
         this.networking = networking;
+        last_click = 0;
+        holdOn = true;
+        calendar = Calendar.getInstance();
     }
 
     private void move(int offset_x, int offset_y) {
         final String msg = String.format(Locale.ENGLISH, "%d %d %d", Constants.DRAG, -offset_x, -offset_y);
         networking.send(msg);
+        Log.d(TAG, "move");
     }
 
     private void scroll(int offset_y) {
@@ -41,43 +50,21 @@ class TouchListener extends GestureDetector.SimpleOnGestureListener {
     }
 
     @Override
-    public boolean onSingleTapConfirmed(MotionEvent e) {
-        String msg = String.format(Locale.ENGLISH, "%d", 88);
-        networking.send(msg);
-        flag = true;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                    if (flag) {
-                        String msg = String.format(Locale.ENGLISH, "%d", 885);
-                        networking.send(msg);
-                    }
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        }).start();
-        return true;
+    public boolean onSingleTapUp(MotionEvent e) {
+        Log.d(TAG, "onSingleTapUp");
+        return super.onSingleTapUp(e);
     }
 
-//    @Override
-//    public boolean onDoubleTap(MotionEvent e) {
-//        // todo send drag mode enable
-//        Log.d("GEST", "DOUBLE TAP");
-//        String msg = String.format(Locale.ENGLISH, "%d", Constants.SELECTION);
-//        networking.send(msg);
-//        Log.d("GEST", "DOUBLE TAP end");
-//        return true;
-//    }
-
+    @Override
+    public boolean onSingleTapConfirmed(MotionEvent e) {
+        String msg = String.format(Locale.ENGLISH, "%d", Constants.LEFT_CLICK);
+        networking.send(msg);
+        Log.d(TAG, "onSingleTapConfirmed");
+        return false;
+    }
 
     @Override
     public boolean onScroll(MotionEvent first, MotionEvent last, float distanceX, float distanceY) {
-        flag = false;
-        String msg = String.format(Locale.ENGLISH, "%d", 885);
-        networking.send(msg);
         int pointerCount = last.getPointerCount();
         if (pointerCount == 1) {
             move((int) distanceX, (int) distanceY);

@@ -1,5 +1,6 @@
 package com.isthisloss.antouchclient;
 
+import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.Locale;
@@ -8,11 +9,16 @@ import java.util.Locale;
  * Created by Dima on 30.03.2017.
  */
 
-class ButtonsListener implements View.OnClickListener {
+class ButtonsListener implements View.OnClickListener, View.OnTouchListener {
     private Networking networking;
 
     public ButtonsListener(Networking networking) {
         this.networking = networking;
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return true;
     }
 
     @Override
