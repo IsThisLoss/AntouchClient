@@ -32,6 +32,7 @@ class TouchListener2 implements View.OnTouchListener {
         waitForRightClick = false;
     }
 
+
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
