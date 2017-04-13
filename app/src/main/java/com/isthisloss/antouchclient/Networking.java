@@ -15,13 +15,12 @@ import java.util.Locale;
 
 class Package {
     // 0 or 1 are half-click events
-    final static int HOLD_ON = 0;
-    final static int HOLD_OFF = 1;
+    final static int HOLD_ON = 1;
+    final static int HOLD_OFF = 0;
 
     // 10 < x < 20 are mouse click events
     final static int LEFT_CLICK = 14;
     final static int RIGHT_CLICK = 15;
-    final static int WHELE_CLICK = 17;
 
     // 20 < x < 30 are mouse motions events
     final static int MOVE = 28;
@@ -34,6 +33,7 @@ class Package {
     static final int BUTTON_RIGHT = 55;
     static final int BUTTON_VOL_DOWN = 57;
     static final int BUTTON_VOL_UP = 58;
+
 
 
     static String mouseKeyEvent(int cmd) {
