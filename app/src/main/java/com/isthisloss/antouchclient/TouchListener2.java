@@ -92,8 +92,6 @@ class TouchListener2 implements View.OnTouchListener {
         int x = (int) e.getX();
         int y = (int) e.getY();
 
-        waitForClick = false;
-
         if (e.getPointerCount() == 1) {
             int dx = x - lastX;
             int dy = y - lastY;
@@ -108,10 +106,15 @@ class TouchListener2 implements View.OnTouchListener {
     }
 
     private void pointerMove(int dx, int dy) {
+        if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1) {
+            return;
+        }
+        waitForClick = false;
         networking.send(Package.mouseMove(dx, dy));
     }
 
     private void scroll(int dy) {
+        waitForClick = false;
         if (Math.abs(dy) > 1) {
             waitForRightClick = false;
             networking.send(Package.mouseScroll(dy));
