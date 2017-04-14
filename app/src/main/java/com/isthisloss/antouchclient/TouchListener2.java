@@ -6,6 +6,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.Calendar;
+import java.util.regex.Matcher;
 
 /**
  * Created by isthisloss on 09.04.17.
@@ -62,10 +63,10 @@ class TouchListener2 implements View.OnTouchListener {
     }
 
     private void actionDown(MotionEvent e) {
-        lastX = (int) e.getX();
-        lastY = (int) e.getY();
+        lastX = Math.round(e.getX());
+        lastY = Math.round(e.getY());
 
-        if (e.getPointerCount() == 1 && System.currentTimeMillis() - lastClick <= 1000) {
+        if (e.getPointerCount() == 1 && System.currentTimeMillis() - lastClick <= 250) {
             holdOn = true;
             networking.send(Package.mouseKeyEvent(Package.HOLD_ON));
         } else {
@@ -89,8 +90,8 @@ class TouchListener2 implements View.OnTouchListener {
     }
 
     private void actionMove(MotionEvent e) {
-        int x = (int) e.getX();
-        int y = (int) e.getY();
+        int x = Math.round(e.getX());
+        int y = Math.round(e.getY());
 
         if (e.getPointerCount() == 1) {
             int dx = x - lastX;
