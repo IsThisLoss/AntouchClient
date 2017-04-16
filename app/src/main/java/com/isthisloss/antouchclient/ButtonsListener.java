@@ -19,29 +19,29 @@ class ButtonsListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        int key = 0;
+        byte key = 0;
         switch (id) {
             case R.id.btnUp:
-                key = Package.BUTTON_UP;
+                key = ProtoAtci.BUTTON_UP;
                 break;
             case R.id.btnDown:
-                key = Package.BUTTON_DOWN;
+                key = ProtoAtci.BUTTON_DOWN;
                 break;
             case R.id.btnLeft:
-                key = Package.BUTTON_LEFT;
+                key = ProtoAtci.BUTTON_LEFT;
                 break;
             case R.id.btnRight:
-                key = Package.BUTTON_RIGHT;
+                key = ProtoAtci.BUTTON_RIGHT;
                 break;
             case R.id.btnVolDown:
-                key = Package.BUTTON_VOL_DOWN;
+                key = ProtoAtci.BUTTON_VOL_DOWN;
                 break;
             case R.id.btnVolUp:
-                key = Package.BUTTON_VOL_UP;
+                key = ProtoAtci.BUTTON_VOL_UP;
                 break;
             default:
                 return;
         }
-        networking.send(Package.keyEvent(key));
+        networking.send(ProtoAtci.command(key));
     }
 }
