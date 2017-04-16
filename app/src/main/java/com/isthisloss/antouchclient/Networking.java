@@ -80,6 +80,15 @@ class Networking {
         }).start();
     }
 
+    void send(final byte[] msg) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                output.println(msg);
+            }
+        }).start();
+    }
+
     private class StartNetworking implements Runnable {
         @Override
         public void run() {

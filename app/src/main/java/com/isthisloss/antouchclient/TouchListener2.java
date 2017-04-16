@@ -1,12 +1,10 @@
 package com.isthisloss.antouchclient;
 
-import android.provider.Settings;
+
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.Calendar;
-import java.util.regex.Matcher;
 
 /**
  * Created by isthisloss on 09.04.17.
@@ -68,7 +66,7 @@ class TouchListener2 implements View.OnTouchListener {
 
         if (e.getPointerCount() == 1 && System.currentTimeMillis() - lastClick <= 250) {
             holdOn = true;
-            networking.send(Package.mouseKeyEvent(Package.HOLD_ON));
+            networking.send(ProtoATCI.mouseKeyEvent(ProtoATCI.HOLD_ON));
         } else {
             waitForClick = true;
         }
@@ -76,17 +74,17 @@ class TouchListener2 implements View.OnTouchListener {
 
     private void actionUp(MotionEvent e) {
         if (holdOn) {
-            networking.send(Package.mouseKeyEvent(Package.HOLD_OFF));
+            networking.send(ProtoATCI.mouseKeyEvent(ProtoATCI.HOLD_OFF));
             holdOn = false;
         } else if (waitForClick) {
             lastClick = System.currentTimeMillis();
-            networking.send(Package.mouseKeyEvent(Package.LEFT_CLICK));
+            networking.send(ProtoATCI.mouseKeyEvent(ProtoATCI.LEFT_CLICK));
             waitForClick = false;
         }
     }
 
     private void actionPointerUp(MotionEvent e) {
-        networking.send(Package.mouseKeyEvent(Package.RIGHT_CLICK));
+        networking.send(ProtoATCI.mouseKeyEvent(ProtoATCI.RIGHT_CLICK));
     }
 
     private void actionMove(MotionEvent e) {
@@ -111,14 +109,14 @@ class TouchListener2 implements View.OnTouchListener {
             return;
         }
         waitForClick = false;
-        networking.send(Package.mouseMove(dx, dy));
+        networking.send(ProtoATCI.mouseMove((short) dx, (short) dy));
     }
 
     private void scroll(int dy) {
         waitForClick = false;
         if (Math.abs(dy) > 1) {
             waitForRightClick = false;
-            networking.send(Package.mouseScroll(dy));
+            networking.send(ProtoATCI.mouseScroll((short) dy));
         }
     }
 }
