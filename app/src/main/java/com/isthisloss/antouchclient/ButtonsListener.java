@@ -1,18 +1,21 @@
 package com.isthisloss.antouchclient;
 
-import android.view.MotionEvent;
 import android.view.View;
-
-import java.util.Locale;
 
 /**
  * Created by Dima on 30.03.2017.
  */
 
+
+/**
+ * Maps this keys to {@link ProtoAtci} key's codes and send one
+ *
+ * @author isthisloss
+ */
 class ButtonsListener implements View.OnClickListener {
     private Networking networking;
 
-    public ButtonsListener(Networking networking) {
+    ButtonsListener(Networking networking) {
         this.networking = networking;
     }
 

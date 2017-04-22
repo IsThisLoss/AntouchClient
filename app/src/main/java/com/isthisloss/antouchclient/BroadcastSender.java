@@ -16,32 +16,41 @@ import java.net.UnknownHostException;
  * Created by Dima on 16.03.2017.
  */
 
+
+/**
+ * Send broadcast message and wait for message with address of needed host
+ */
 class BroadcastSender extends AsyncTask<Void, Void, String> {
-    private MainActivity activity;
+    private MainActivity mainActivity;
     private CountDownTimer countDownTimer;
     private ProgressDialog progressDialog;
 
-    BroadcastSender(MainActivity activity) {
-        this.activity = activity;
+    /**
+     * Constructor
+     *
+     * @param mainActivity is a reference to main activity of the application
+     */
+    BroadcastSender(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        progressDialog = ProgressDialog.show(activity, "Поиск приставки", "Пожалуйста подождите", true);
+        progressDialog = ProgressDialog.show(mainActivity,
+                mainActivity.getString(R.string.searching_for_set_top_box),
+                mainActivity.getString(R.string.please_wait), true);
 
         countDownTimer = new CountDownTimer(5000, 5000) {
             @Override
             public void onTick(long millisUntilFinished) {
-
             }
 
             @Override
             public void onFinish() {
-                BroadcastSender.this.onPostExecute(null);
+                onPostExecute(null);
             }
         }.start();
-
     }
 
     @Override
@@ -49,8 +58,8 @@ class BroadcastSender extends AsyncTask<Void, Void, String> {
         super.onPostExecute(s);
         countDownTimer.cancel();
         progressDialog.dismiss();
-        activity.onTaskFinished(s);
-        activity = null; // due to free memory
+        mainActivity.onBroadcastSenderFinished(s);
+        mainActivity = null; // due to free memory
     }
 
     @Override
@@ -71,8 +80,15 @@ class BroadcastSender extends AsyncTask<Void, Void, String> {
         }
     }
 
+    /**
+     * Provides broadcast address of current wifi network
+     *
+     * @return Broadcast addres of current wifi network
+     * @throws UnknownHostException
+     */
     private InetAddress getBroadcastAddress() throws UnknownHostException {
-        WifiManager wifi = (WifiManager) activity.getApplicationContext().getSystemService(Context.WIFI_SERVICE); // wtf
+        WifiManager wifi = (WifiManager) mainActivity.getApplicationContext().getSystemService(Context.WIFI_SERVICE); // wtf
+
         DhcpInfo dhcpInfo = wifi.getDhcpInfo();
 
         int broadcast = (dhcpInfo.ipAddress & dhcpInfo.netmask) | ~dhcpInfo.netmask;

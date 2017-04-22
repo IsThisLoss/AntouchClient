@@ -1,39 +1,53 @@
 package com.isthisloss.antouchclient;
 
-import android.app.Activity;
 import android.util.Log;
 
-import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Locale;
+
 
 /**
  * Created by Dima on 11.03.2017.
  */
 
+/**
+ * Class which provide networking function
+ *
+ * @author isthisloss
+ */
 class Networking {
+    private final static String TAG = "Networking";
+
+    private MainActivity mainActivity;
     private DataOutputStream dataOutputStream;
-    private Activity activity;
-    private Runnable errorListener;
     private String serverIp;
 
-    Networking(Activity activity, Runnable errorListener) {
-        this.activity = activity;
-        this.errorListener = errorListener;
+    /**
+     * Constructor
+     * @param mainActivity is a reference to main activity of the application
+     */
+    Networking(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
     }
 
+    /**
+     * Tries to connect with owner of this IP-address
+     *
+     * @param ip is an IP-address of endpoint
+     */
     void connect(String ip) {
-        this.serverIp = ip;
+        serverIp = ip;
         new Thread(new StartNetworking()).start();
     }
 
+    /**
+     * Sends {@link ProtoAtci} message to connected set top box
+     *
+     * @param msg is an array of byte which contains {@link ProtoAtci} message
+     */
     void send(final byte[] msg) {
-        Log.d("NET", String.format("0x%X", msg[0]));
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -46,6 +60,11 @@ class Networking {
         }).start();
     }
 
+    /**
+     * Initialize TCP connection
+     * It has to be due to network rules of android system
+     * Because every network must be outside UI thread
+     */
     private class StartNetworking implements Runnable {
         @Override
         public void run() {
@@ -54,8 +73,8 @@ class Networking {
                 //incoming = new BufferedReader(new InputStreamReader(socket.getInputStream())); maybe for future use
                 dataOutputStream = new DataOutputStream(socket.getOutputStream());
             } catch (Exception e) {
-                activity.runOnUiThread(errorListener);
-                e.printStackTrace();
+                Log.d(TAG, "Exception in StartNetworking");
+                mainActivity.onConnectionError();
             }
         }
     }

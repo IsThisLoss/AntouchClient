@@ -4,6 +4,12 @@ package com.isthisloss.antouchclient;
  * Created by Dima on 15.04.2017.
  */
 
+/**
+ * ProtoAtci is a class which provide functions to work with
+ * Android Touch Code Interconnection protocol
+ *
+ * @author isthisloss
+ */
 class ProtoAtci {
     // headers state
     final static byte COMMAND  = 0x00;
@@ -27,7 +33,12 @@ class ProtoAtci {
     final static byte BUTTON_VOL_DOWN = 0x0A;
     final static byte BUTTON_VOL_UP   = 0x0B;
 
-
+    /**
+     * Generate message which contains scroll event
+     *
+     * @param dx vertical offset
+     * @return ATCI message
+     */
     static byte[] mouseScroll(short dx) {
         byte[] msg = new byte[3];
         msg[0] = V_SCROLL;
@@ -36,6 +47,14 @@ class ProtoAtci {
         return msg;
     }
 
+    /**
+     * Generate message about mouse move event based on
+     * vertical and horizontal offsets
+     *
+     * @param dx horizontal offset
+     * @param dy vertical offset
+     * @return ATCI message
+     */
     static byte[] mouseMove(short dx, short dy) {
         byte[] msg = new byte[5];
         msg[0] = MOVE;
@@ -46,6 +65,12 @@ class ProtoAtci {
         return msg;
     }
 
+    /**
+     * Generate message with one defined command
+     *
+     * @param cmd command to send
+     * @return ATCI message
+     */
     static byte[] command(byte cmd) {
         byte[] msg = new byte[1];
         msg[0] = (byte)(cmd << 2);  // 'cause cmd << 2 | 0x00 does't really change anything

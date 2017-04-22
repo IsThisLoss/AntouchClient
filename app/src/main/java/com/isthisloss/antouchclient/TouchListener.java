@@ -1,17 +1,20 @@
 package com.isthisloss.antouchclient;
 
-
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-
 
 /**
  * Created by isthisloss on 09.04.17.
  */
 
+/**
+ * Touch Listener is a class which listen touch events of certain view
+ *
+ * @author isthisloss
+ */
 class TouchListener implements View.OnTouchListener {
-    private final String TAG = "TL2";
+    private final String TAG = "TouchListener";
 
     private boolean holdOn;
     private boolean waitForClick;
@@ -23,6 +26,11 @@ class TouchListener implements View.OnTouchListener {
     private int lastX;
     private int lastY;
 
+    /**
+     * Constructor
+     *
+     * @param networking is a connected to set-top box instance of {@link Networking} class
+     */
     TouchListener(Networking networking) {
         this.networking = networking;
         holdOn = false;
@@ -60,6 +68,11 @@ class TouchListener implements View.OnTouchListener {
         return true;
     }
 
+    /**
+     * It is called when one finger touch the view
+     *
+     * @param e is an Android Motion Event instance
+     */
     private void actionDown(MotionEvent e) {
         lastX = Math.round(e.getX());
         lastY = Math.round(e.getY());
@@ -72,6 +85,11 @@ class TouchListener implements View.OnTouchListener {
         }
     }
 
+    /**
+     * It is called when one finger releases
+     *
+     * @param e is an Android Motion Event instance
+     */
     private void actionUp(MotionEvent e) {
         if (holdOn) {
             networking.send(ProtoAtci.command(ProtoAtci.HOLD_OFF));
@@ -83,10 +101,20 @@ class TouchListener implements View.OnTouchListener {
         }
     }
 
+    /**
+     * It is called when two (or maybe more) fingers release
+     *
+     * @param e is an Android Motion Event instance
+     */
     private void actionPointerUp(MotionEvent e) {
         networking.send(ProtoAtci.command(ProtoAtci.RIGHT_CLICK));
     }
 
+    /**
+     * Callback for move event
+     *
+     * @param e is an Android Motion Event instance
+     */
     private void actionMove(MotionEvent e) {
         int x = Math.round(e.getX());
         int y = Math.round(e.getY());
@@ -104,6 +132,13 @@ class TouchListener implements View.OnTouchListener {
         }
     }
 
+    /**
+     * Send {@link ProtoAtci} message if dx and dy do not belong to unit circle
+     * otherwise do nothing
+     *
+     * @param dx is a horizontal offset
+     * @param dy is a vertical offset
+     */
     private void pointerMove(int dx, int dy) {
         if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1) {
             return;
@@ -112,6 +147,12 @@ class TouchListener implements View.OnTouchListener {
         networking.send(ProtoAtci.mouseMove((short) dx, (short) dy));
     }
 
+    /**
+     * Send {@link ProtoAtci} message if dy more that 1
+     * otherwise do nothing
+     *
+     * @param dy is a vertical offset
+     */
     private void scroll(int dy) {
         waitForClick = false;
         if (Math.abs(dy) > 1) {

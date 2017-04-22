@@ -9,4 +9,9 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="tab_one">Тачпад</string>
     <string name="tab_two">Дополнительно</string>
+    <string name="searching_for_set_top_box">Поиск приставки</string>
+    <string name="please_wait">Пожалуйста подождите</string>
+    <string name="error">Ошибка</string>
+    <string name="connection_error">Ошибка подключения</string>
+    <string name="close">Закрыть</string>
 </resources>
