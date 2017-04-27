@@ -19,7 +19,7 @@ class ProtoAtci {
 
     // half mouse codes < 2
     final static byte HOLD_ON =  0x01;
-    final static byte HOLD_OFF = 0x00; // means 0x0 << 2
+    final static byte HOLD_OFF = 0x00;
 
     // mouse key codes < BUTTON_UP
     final static byte LEFT_CLICK  = 0x02;
@@ -30,8 +30,18 @@ class ProtoAtci {
     final static byte BUTTON_DOWN     = 0x07;
     final static byte BUTTON_LEFT     = 0x08;
     final static byte BUTTON_RIGHT    = 0x09;
-    final static byte BUTTON_VOL_DOWN = 0x0A;
-    final static byte BUTTON_VOL_UP   = 0x0B;
+    final static byte BUTTON_ESC      = 0x0A;
+    final static byte BUTTON_ENTER    = 0x0B;
+    final static byte BUTTON_BACKSPACE= 0x0C;
+
+
+    final static byte BUTTON_VOL_DOWN   = 0x0D;
+    final static byte BUTTON_VOL_UP     = 0x0E;
+    final static byte BUTTON_MEDIA_LAST = 0x0F;
+    final static byte BUTTON_MEDIA_NEXT = 0x10;
+    final static byte BUTTON_MEDIA_PLAY = 0x11;
+    final static byte BUTTON_MEDIA_PAUSE = 0x12;
+
 
     /**
      * Generate message which contains scroll event
@@ -74,6 +84,19 @@ class ProtoAtci {
     static byte[] command(byte cmd) {
         byte[] msg = new byte[1];
         msg[0] = (byte)(cmd << 2);  // 'cause cmd << 2 | 0x00 does't really change anything
+        return msg;
+    }
+    /**
+     * Generate message with text
+     *
+     * @param string is a text to send
+     * @return ATCI message
+     */
+    static byte[] text(String string) {
+        byte[] text = string.getBytes();
+        byte[] msg = new byte[text.length + 1];
+        msg[0] = TEXT;
+        System.arraycopy(text, 0, msg, 1, text.length);
         return msg;
     }
 }

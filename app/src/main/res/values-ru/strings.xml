@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="close">Закрыть</string>
+    <string name="connection_error">Ошибка подключения</string>
+    <string name="error">Ошибка</string>
+    <string name="please_wait">Пожалуйста подождите</string>
+    <string name="searching_for_set_top_box">Поиск приставки</string>
+    <string name="tab_one">Тачпад</string>
+    <string name="tab_two">Дополнительно</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="SearchBtn">Поиск</string>
+    <string name="SearchInstr">Как только приставка будет включена нажмите кнопку \"Поиск\" ниже</string>
+    <string name="text_input">Ввод текста</string>
+    <string name="send">Отправить</string>
+    <string name="cancel">Отмена</string>
+</resources>

@@ -11,104 +11,94 @@
     tools:layout_editor_absoluteY="25dp">
 
     <Button
-        android:id="@+id/btnVolDown"
+        android:id="@+id/btnEsc"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="90dp"
         android:layout_height="60dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_weight="0.93"
         android:background="@android:color/background_light"
         android:onClick="onButtonClick"
-        android:text="VolDw"
+        android:text="ESC"
         android:textColor="@color/colorPrimaryDark"
+        app:layout_constraintRight_toLeftOf="@+id/btnUp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp" />
 
     <Button
         android:id="@+id/btnUp"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="90dp"
         android:layout_height="60dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:background="@android:color/background_light"
         android:elevation="0dp"
         android:onClick="onButtonClick"
         android:text="Up"
         android:textColor="@color/colorPrimaryDark"
-        app:layout_constraintLeft_toRightOf="@+id/btnVolDown"
-        app:layout_constraintRight_toLeftOf="@+id/btnVolUp"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintRight_toLeftOf="@+id/btnEnter"
+        app:layout_constraintLeft_toRightOf="@+id/btnEsc"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp" />
 
     <Button
         android:id="@+id/btnLeft"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="90dp"
         android:layout_height="60dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:background="@android:color/background_light"
         android:onClick="onButtonClick"
         android:text="Left"
         android:textColor="@color/colorPrimaryDark"
+        app:layout_constraintRight_toLeftOf="@+id/btnDown"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnVolDown" />
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/btnEsc" />
 
     <Button
         android:id="@+id/btnDown"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="90dp"
         android:layout_height="60dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:background="@android:color/background_light"
         android:onClick="onButtonClick"
         android:text="Down"
         android:textColor="@color/colorPrimaryDark"
-        app:layout_constraintLeft_toRightOf="@+id/btnLeft"
         app:layout_constraintRight_toLeftOf="@+id/btnRight"
+        app:layout_constraintLeft_toRightOf="@+id/btnLeft"
+        android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@+id/btnUp" />
 
     <Button
-        android:id="@+id/btnVolUp"
+        android:id="@+id/btnEnter"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="90dp"
         android:layout_height="60dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="7dp"
-        android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:background="@android:color/background_light"
         android:onClick="onButtonClick"
-        android:text="VolUP"
+        android:text="ENTER"
         android:textColor="@color/colorPrimaryDark"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintLeft_toRightOf="@+id/btnUp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp" />
 
     <Button
         android:id="@+id/btnRight"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="90dp"
         android:layout_height="60dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:background="@android:color/background_light"
         android:onClick="onButtonClick"
         android:text="Right"
         android:textColor="@color/colorPrimaryDark"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnVolUp" />
+        app:layout_constraintLeft_toRightOf="@+id/btnDown"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/btnEnter" />
 
 </android.support.constraint.ConstraintLayout>
