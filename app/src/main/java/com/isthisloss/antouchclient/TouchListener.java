@@ -1,8 +1,10 @@
 package com.isthisloss.antouchclient;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 
 /**
  * Created by isthisloss on 09.04.17.
@@ -18,25 +20,36 @@ class TouchListener implements View.OnTouchListener {
 
     private boolean holdOn;
     private boolean waitForClick;
-    private boolean waitForRightClick;
     private long lastClick;
 
-    private Networking networking;
+    private  Networking networking;
+
+    private Handler longPressHandler;
+    private Runnable onLongPressCallback;
 
     private int lastX;
     private int lastY;
+    private int scrollArea;
 
     /**
      * Constructor
      *
      * @param networking is a connected to set-top box instance of {@link Networking} class
+     * @param scrollArea is the offset from right corner for scrolling area
      */
-    TouchListener(Networking networking) {
+    TouchListener(Networking networking, int scrollArea) {
         this.networking = networking;
-        holdOn = false;
-        lastClick = 0;
-        waitForClick = false;
-        waitForRightClick = false;
+        this.scrollArea = scrollArea;
+        this.longPressHandler = new Handler();
+        this.onLongPressCallback = new Runnable() {
+            @Override
+            public void run() {
+                TouchListener.this.networking.send(ProtoAtci.command(ProtoAtci.RIGHT_CLICK));
+            }
+        };
+        this.holdOn = false;
+        this.lastClick = 0;
+        this.waitForClick = false;
     }
 
 
@@ -46,22 +59,16 @@ class TouchListener implements View.OnTouchListener {
             case MotionEvent.ACTION_DOWN:
                 Log.d(TAG, "ACTION_DOWN");
                 actionDown(event);
+                longPressHandler.postDelayed(onLongPressCallback, ViewConfiguration.getLongPressTimeout());
                 break;
             case MotionEvent.ACTION_UP:
                 Log.d(TAG, "ACTION_UP");
+                longPressHandler.removeCallbacks(onLongPressCallback);
                 actionUp(event);
-                break;
-            case MotionEvent.ACTION_POINTER_DOWN:
-                Log.d(TAG, "ACTION_POINTER_DOWN");
-                waitForRightClick = true;
-                break;
-            case MotionEvent.ACTION_POINTER_UP:
-                Log.d(TAG, "ACTION_POINTER_UP");
-                if (waitForRightClick)
-                    actionPointerUp(event);
                 break;
             case MotionEvent.ACTION_MOVE:
                 Log.d(TAG, "ACTION_MOVE");
+                longPressHandler.removeCallbacks(onLongPressCallback);
                 actionMove(event);
                 break;
         }
@@ -102,15 +109,6 @@ class TouchListener implements View.OnTouchListener {
     }
 
     /**
-     * It is called when two (or maybe more) fingers release
-     *
-     * @param e is an Android Motion Event instance
-     */
-    private void actionPointerUp(MotionEvent e) {
-        networking.send(ProtoAtci.command(ProtoAtci.RIGHT_CLICK));
-    }
-
-    /**
      * Callback for move event
      *
      * @param e is an Android Motion Event instance
@@ -119,17 +117,22 @@ class TouchListener implements View.OnTouchListener {
         int x = Math.round(e.getX());
         int y = Math.round(e.getY());
 
-        if (e.getPointerCount() == 1) {
+        if (e.getPointerCount() != 1) {
+            return;
+        }
+
+
+        if (x < scrollArea) { // (x, y) does not belong to scroll area
             int dx = x - lastX;
             int dy = y - lastY;
             pointerMove(dx, dy);
-            lastX = x;
-            lastY = y;
-        } else if (e.getPointerCount() == 2) {
-            scroll(y - lastY);
-            lastX = x;
-            lastY = y;
+        } else {
+            int dy = y - lastY;
+            scroll(dy);
         }
+
+        lastX = x;
+        lastY = y;
     }
 
     /**
@@ -155,8 +158,7 @@ class TouchListener implements View.OnTouchListener {
      */
     private void scroll(int dy) {
         waitForClick = false;
-        if (Math.abs(dy) > 1) {
-            waitForRightClick = false;
+        if (Math.abs(dy) > 2) {
             networking.send(ProtoAtci.mouseScroll((short) dy));
         }
     }

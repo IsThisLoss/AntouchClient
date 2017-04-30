@@ -6,7 +6,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -67,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
         networking = new Networking(this);
         networking.connect(ip);
 
-        iw.setOnTouchListener(new TouchListener(networking));
+        int w = iw.getWidth();
+        iw.setOnTouchListener(new TouchListener(networking, (int) (w - 0.1 * w))); // 10% from right corner for scroll area
         buttonsListener = new ButtonsListener(networking);
     }
 
@@ -103,7 +103,10 @@ public class MainActivity extends AppCompatActivity {
                 dialog.cancel();
             }
         });
-        builder.show();
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+        alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
     }
 
     /**
